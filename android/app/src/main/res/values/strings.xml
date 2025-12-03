@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="app_name">Vuka265</string>
+    <string name="facebook_app_id">651155051214293</string>
+    <string name="fb_login_protocol_scheme">fb651155051214293</string>
+     <string name="facebook_client_token">472e61b56254d3cae7d18992891bd002</string>
+          
+</resources>

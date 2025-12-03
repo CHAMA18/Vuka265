@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "236422576815",
+    "project_id": "vuka265-6z79ng",
+    "storage_bucket": "vuka265-6z79ng.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:236422576815:android:4c31d92cf0de37a32bb25a",
+        "android_client_info": {
+          "package_name": "com.vukaapp.vukaglobal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "236422576815-9fn37evnjuqs4vmjfku0grmmbt38s5sg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vukaapp.vukaglobal",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "236422576815-tgrqumnne1t4g4r15p6bsc9dm99lmprl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBybwa8K1680fw6Op_ThpahD-LikYCG8f0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "236422576815-tgrqumnne1t4g4r15p6bsc9dm99lmprl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "236422576815-6gej3g18ut7seu4qmvm1o6gsco0pf22l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vukaapp.vukaglobal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

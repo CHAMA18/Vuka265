@@ -1,0 +1,50 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "chats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userIDs",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "lastMessageTime",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "User",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Delivered",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "TimeDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "User",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "TimeDate",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ]
+}
