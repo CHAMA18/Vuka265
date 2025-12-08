@@ -1,6 +1,7 @@
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/internationalization.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/settings/logout_notify/logout_notify_widget.dart';
 import 'dart:ui';
@@ -76,7 +77,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
             ),
           ),
           title: Text(
-            'Settings',
+            FFLocalizations.of(context).getText('settings'),
             style: FlutterFlowTheme.of(context).titleMedium.override(
                   fontFamily: 'Onest',
                   letterSpacing: 0.0,
@@ -217,7 +218,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       12.0, 0.0, 0.0, 0.0),
                                   child: Text(
-                                    'Discovery Preferences',
+                                    FFLocalizations.of(context).getText('discovery_preferences'),
                                     style: FlutterFlowTheme.of(context)
                                         .labelLarge
                                         .override(
@@ -335,7 +336,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       12.0, 0.0, 0.0, 0.0),
                                   child: Text(
-                                    'Notifications',
+                                    FFLocalizations.of(context).getText('notifications'),
                                     style: FlutterFlowTheme.of(context)
                                         .labelLarge
                                         .override(
@@ -389,7 +390,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       12.0, 0.0, 0.0, 0.0),
                                   child: Text(
-                                    'Account & Security',
+                                    FFLocalizations.of(context).getText('account_security'),
                                     style: FlutterFlowTheme.of(context)
                                         .labelLarge
                                         .override(
@@ -443,7 +444,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       12.0, 0.0, 0.0, 0.0),
                                   child: Text(
-                                    'Subscription',
+                                    FFLocalizations.of(context).getText('subscription'),
                                     style: FlutterFlowTheme.of(context)
                                         .labelLarge
                                         .override(
@@ -497,7 +498,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       12.0, 0.0, 0.0, 0.0),
                                   child: Text(
-                                    'App Appearance',
+                                    FFLocalizations.of(context).getText('app_appearance'),
                                     style: FlutterFlowTheme.of(context)
                                         .labelLarge
                                         .override(
@@ -605,7 +606,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       12.0, 0.0, 0.0, 0.0),
                                   child: Text(
-                                    'Help & Support',
+                                    FFLocalizations.of(context).getText('help_support'),
                                     style: FlutterFlowTheme.of(context)
                                         .labelLarge
                                         .override(
@@ -678,7 +679,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       12.0, 0.0, 0.0, 0.0),
                                   child: Text(
-                                    'Logout',
+                                    FFLocalizations.of(context).getText('logout'),
                                     style: FlutterFlowTheme.of(context)
                                         .labelLarge
                                         .override(

@@ -29,6 +29,13 @@ class PawaPayCorrespondent {
 
 class PawaPayService {
   static final _functions = FirebaseFunctions.instance;
+  
+  // Set to true to enable test mode (simulates successful payments)
+  // Set to false for production with real PawaPay API
+  static const bool _testMode = true;
+  
+  /// Returns whether the service is in test mode
+  static bool get isTestMode => _testMode;
 
   // Plan amounts in USD
   static const Map<String, double> _planAmountsUSD = {
@@ -145,6 +152,33 @@ class PawaPayService {
     required String depositId,
     required String correspondentKey,
   }) async {
+    // Test mode - simulate successful payment initiation
+    if (_testMode) {
+      debugPrint('PawaPay TEST MODE: Simulating deposit initiation');
+      debugPrint('  Plan: $planTitle, Phone: $phoneNumber, Correspondent: $correspondentKey');
+      
+      // Find the correspondent to get currency and amount
+      final correspondentData = _staticCorrespondents.firstWhere(
+        (c) => c['key'] == correspondentKey,
+        orElse: () => {'currency': 'USD'},
+      );
+      final currency = correspondentData['currency'] as String;
+      final usdAmount = _planAmountsUSD[planTitle] ?? 1.0;
+      final localAmount = _convertToLocalCurrency(usdAmount, currency);
+      
+      // Simulate network delay
+      await Future.delayed(const Duration(seconds: 1));
+      
+      return {
+        'success': true,
+        'depositId': depositId,
+        'status': 'PENDING',
+        'amount': localAmount,
+        'currency': currency,
+        'testMode': true,
+      };
+    }
+    
     try {
       final callable = _functions.httpsCallable('initiatePawaPayDeposit');
       final result = await callable.call({
@@ -158,23 +192,70 @@ class PawaPayService {
       return data;
     } on FirebaseFunctionsException catch (e) {
       debugPrint('PawaPay deposit error: ${e.message}');
+      debugPrint('PawaPay error code: ${e.code}');
+      debugPrint('PawaPay error details: ${e.details}');
+      
+      String errorMessage = 'Payment initiation failed';
+      if (e.code == 'internal') {
+        errorMessage = 'Payment service error. Please ensure the Cloud Functions are deployed and PawaPay API token is configured.';
+      } else if (e.code == 'unauthenticated') {
+        errorMessage = 'Please sign in to make a payment.';
+      } else if (e.code == 'invalid-argument') {
+        errorMessage = e.message ?? 'Invalid payment details provided.';
+      }
+      
       return {
         'success': false,
-        'error': e.message ?? 'Payment initiation failed',
+        'error': errorMessage,
         'code': e.code,
       };
     } catch (e) {
       debugPrint('PawaPay deposit error: $e');
       return {
         'success': false,
-        'error': 'Unable to connect to payment service. Please try again.',
+        'error': 'Unable to connect to payment service. Please check your internet connection and try again.',
         'technicalDetails': e.toString(),
       };
     }
   }
 
+  // Track test mode payment attempts for simulating status progression
+  static final Map<String, int> _testModeAttempts = {};
+  
   /// Checks the status of a deposit via Firebase Cloud Function
   static Future<Map<String, dynamic>> checkDepositStatus(String depositId) async {
+    // Test mode - simulate payment status progression
+    if (_testMode) {
+      // Track attempts to simulate status progression
+      _testModeAttempts[depositId] = (_testModeAttempts[depositId] ?? 0) + 1;
+      final attempts = _testModeAttempts[depositId]!;
+      
+      debugPrint('PawaPay TEST MODE: Checking deposit status (attempt $attempts)');
+      
+      // Simulate network delay
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      // Simulate status progression: PENDING -> ACCEPTED -> COMPLETED
+      String status;
+      if (attempts <= 2) {
+        status = 'PENDING';
+      } else if (attempts <= 3) {
+        status = 'ACCEPTED';
+      } else {
+        status = 'COMPLETED';
+        // Clean up tracking
+        _testModeAttempts.remove(depositId);
+      }
+      
+      debugPrint('PawaPay TEST MODE: Status = $status');
+      
+      return {
+        'success': true,
+        'status': status,
+        'testMode': true,
+      };
+    }
+    
     try {
       final callable = _functions.httpsCallable('checkPawaPayDepositStatus');
       final result = await callable.call({'depositId': depositId});

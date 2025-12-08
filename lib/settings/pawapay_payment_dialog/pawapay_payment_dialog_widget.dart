@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vuka265/auth/firebase_auth/auth_util.dart';
 import 'package:vuka265/flutter_flow/flutter_flow_theme.dart';
 import 'package:vuka265/flutter_flow/flutter_flow_util.dart';
 import 'package:vuka265/flutter_flow/flutter_flow_widgets.dart';
@@ -116,6 +119,68 @@ class _PawaPayPaymentDialogWidgetState extends State<PawaPayPaymentDialogWidget>
     }
   }
 
+  /// Updates the user's subscription in Firestore after successful payment
+  Future<void> _updateUserSubscription() async {
+    try {
+      final userId = currentUserUid;
+      if (userId.isEmpty) {
+        debugPrint('Cannot update subscription: No user ID');
+        return;
+      }
+
+      final correspondent = _model.selectedCorrespondent;
+      final priceLabel = correspondent != null 
+          ? '${correspondent.amount ?? ''} ${correspondent.currency}'
+          : widget.priceLabel;
+      
+      // Calculate subscription duration
+      DateTime duration;
+      final now = DateTime.now();
+      switch (widget.planTitle) {
+        case 'Daily':
+          duration = now.add(const Duration(days: 1));
+          break;
+        case 'Weekly':
+          duration = now.add(const Duration(days: 7));
+          break;
+        case 'Yearly':
+          duration = now.add(const Duration(days: 365));
+          break;
+        case 'Gold':
+          duration = now.add(const Duration(days: 36500)); // ~100 years
+          break;
+        default:
+          duration = now.add(const Duration(days: 30));
+      }
+
+      final firestore = FirebaseFirestore.instance;
+      final subscriptionRef = firestore.collection('subscriptions').doc(userId);
+      final userRef = firestore.collection('users').doc(userId);
+
+      // Create subscription document
+      await subscriptionRef.set({
+        'subscriptionname': '${widget.planTitle} Plan',
+        'price': priceLabel,
+        'duration': Timestamp.fromDate(duration),
+        'users': userRef,
+        'status': 'active',
+        'startDate': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'isLifetime': widget.planTitle == 'Gold',
+      }, SetOptions(merge: true));
+
+      // Update user's subscription reference
+      await userRef.update({
+        'subscription': subscriptionRef,
+      });
+
+      debugPrint('Subscription updated successfully for user: $userId');
+    } catch (e) {
+      debugPrint('Error updating subscription: $e');
+      // Don't fail the payment flow if subscription update fails
+    }
+  }
+
   Future<void> _pollPaymentStatus(String depositId) async {
     int attempts = 0;
     const maxAttempts = 30;
@@ -135,6 +200,9 @@ class _PawaPayPaymentDialogWidgetState extends State<PawaPayPaymentDialogWidget>
             _model.isProcessing = false;
             _model.paymentStatus = 'Payment successful!';
           });
+
+          // Update user subscription in Firestore (especially for test mode)
+          await _updateUserSubscription();
 
           await Future.delayed(const Duration(seconds: 1));
           
@@ -532,6 +600,34 @@ class _PawaPayPaymentDialogWidgetState extends State<PawaPayPaymentDialogWidget>
                   ),
                 ),
               ),
+              if (PawaPayService.isTestMode) ...[
+                const SizedBox(height: 8.0),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.science, size: 16, color: Colors.orange),
+                      const SizedBox(width: 6),
+                      Text(
+                        'TEST MODE - No real payment',
+                        style: FlutterFlowTheme.of(context).bodySmall.override(
+                          fontFamily: 'Onest',
+                          color: Colors.orange,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),

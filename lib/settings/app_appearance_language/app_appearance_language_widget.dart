@@ -2,6 +2,7 @@ import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/internationalization.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:ui';
 import '/actions/actions.dart' as action_blocks;
@@ -79,7 +80,7 @@ class _AppAppearanceLanguageWidgetState
             ),
           ),
           title: Text(
-            'App Language',
+            FFLocalizations.of(context).getText('app_language'),
             style: FlutterFlowTheme.of(context).titleMedium.override(
                   fontFamily: 'Onest',
                   letterSpacing: 0.0,
@@ -225,12 +226,12 @@ class _AppAppearanceLanguageWidgetState
                       context: context,
                       builder: (alertDialogContext) {
                         return AlertDialog(
-                          title: Text('Language Changed'),
-                          content: Text('The app language has been changed to ${_model.language}. Please restart the app for changes to take full effect.'),
+                          title: Text(FFLocalizations.of(context).getText('language_changed')),
+                          content: Text('${_model.language}'),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(alertDialogContext),
-                              child: Text('OK'),
+                              child: Text(FFLocalizations.of(context).getText('ok')),
                             ),
                           ],
                         );
@@ -238,7 +239,7 @@ class _AppAppearanceLanguageWidgetState
                     );
                     context.safePop();
                   },
-                  text: 'Submit',
+                  text: FFLocalizations.of(context).getText('submit'),
                   options: FFButtonOptions(
                     width: double.infinity,
                     height: 56.0,

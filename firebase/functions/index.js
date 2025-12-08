@@ -301,7 +301,12 @@ exports.checkPawaPayDepositStatus = functions.https.onCall(
           response.data.status === "ACCEPTED"
         ) {
           const transaction = transactionDoc.data();
-          await updateUserSubscription(context.auth.uid, transaction.planTitle);
+          await updateUserSubscription(
+            context.auth.uid,
+            transaction.planTitle,
+            transaction.amount,
+            transaction.currency
+          );
         }
       }
 
@@ -504,42 +509,58 @@ exports.onNewMessage = functions.firestore
     }
   });
 
-async function updateUserSubscription(userId, planTitle) {
+async function updateUserSubscription(userId, planTitle, amount, currency) {
+  const now = new Date();
+  let duration;
+  let priceLabel = amount && currency ? `${amount} ${currency}` : "";
+
+  switch (planTitle) {
+    case "Daily":
+      duration = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      break;
+    case "Weekly":
+      duration = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      break;
+    case "Yearly":
+      duration = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+      break;
+    case "Gold":
+      // Lifetime subscription - set duration far in the future
+      duration = new Date(now.getTime() + 100 * 365 * 24 * 60 * 60 * 1000);
+      break;
+    default:
+      duration = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  }
+
+  // Fields matching SubscriptionsRecord schema
   const subscriptionData = {
-    plan: planTitle,
+    subscriptionname: `${planTitle} Plan`,
+    price: priceLabel,
+    duration: duration,
+    users: admin.firestore().collection("users").doc(userId),
+    // Additional fields for tracking
     status: "active",
     startDate: admin.firestore.FieldValue.serverTimestamp(),
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    isLifetime: planTitle === "Gold",
   };
 
-  const now = new Date();
-  switch (planTitle) {
-    case "Daily":
-      subscriptionData.endDate = new Date(
-        now.getTime() + 24 * 60 * 60 * 1000
-      );
-      break;
-    case "Weekly":
-      subscriptionData.endDate = new Date(
-        now.getTime() + 7 * 24 * 60 * 60 * 1000
-      );
-      break;
-    case "Yearly":
-      subscriptionData.endDate = new Date(
-        now.getTime() + 365 * 24 * 60 * 60 * 1000
-      );
-      break;
-    case "Gold":
-      subscriptionData.endDate = null;
-      subscriptionData.isLifetime = true;
-      break;
-  }
-
-  await admin
+  const subscriptionRef = admin
     .firestore()
     .collection("subscriptions")
+    .doc(userId);
+
+  // Save subscription document
+  await subscriptionRef.set(subscriptionData, {merge: true});
+
+  // Update user's subscription reference
+  await admin
+    .firestore()
+    .collection("users")
     .doc(userId)
-    .set(subscriptionData, {merge: true});
+    .update({
+      subscription: subscriptionRef,
+    });
 }
 
 /**

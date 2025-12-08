@@ -2,6 +2,7 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/internationalization.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:ui';
 import '/index.dart';
@@ -113,7 +114,7 @@ class _NavbarWidgetState extends State<NavbarWidget> {
                         padding:
                             EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
                         child: Text(
-                          'Home',
+                          FFLocalizations.of(context).getText('home'),
                           style: FlutterFlowTheme.of(context)
                               .labelSmall
                               .override(
@@ -161,7 +162,7 @@ class _NavbarWidgetState extends State<NavbarWidget> {
                         padding:
                             EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
                         child: Text(
-                          'Matches',
+                          FFLocalizations.of(context).getText('matches'),
                           style: FlutterFlowTheme.of(context)
                               .labelSmall
                               .override(
@@ -212,7 +213,7 @@ class _NavbarWidgetState extends State<NavbarWidget> {
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 0.0, 4.0, 0.0, 0.0),
                             child: Text(
-                              'Chats',
+                              FFLocalizations.of(context).getText('chats'),
                               style: FlutterFlowTheme.of(context)
                                   .labelSmall
                                   .override(
@@ -308,7 +309,7 @@ class _NavbarWidgetState extends State<NavbarWidget> {
                         padding:
                             EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
                         child: Text(
-                          'Profile',
+                          FFLocalizations.of(context).getText('profile'),
                           style: FlutterFlowTheme.of(context)
                               .labelSmall
                               .override(

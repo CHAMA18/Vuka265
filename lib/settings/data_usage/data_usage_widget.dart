@@ -44,46 +44,55 @@ class _DataUsageWidgetState extends State<DataUsageWidget> {
     });
 
     try {
-      // Fetch counts in parallel.
-      final chatsCountFut = FirebaseFirestore.instance
+      // First, get all chats for this user
+      final chatsSnapshot = await FirebaseFirestore.instance
           .collection('chats')
           .where('userIDs', arrayContains: userRef)
-          .count()
           .get();
 
-      final sentMessagesFut = FirebaseFirestore.instance
-          .collectionGroup('messages')
-          .where('senderId', isEqualTo: userRef)
-          .count()
-          .get();
+      final chatsCount = chatsSnapshot.docs.length;
 
-      final receivedMessagesFut = FirebaseFirestore.instance
-          .collectionGroup('messages')
-          .where('receiverId', isEqualTo: userRef)
-          .count()
-          .get();
-
-      final swipesCountFut = FirebaseFirestore.instance
+      // Count swipes
+      final swipesSnapshot = await FirebaseFirestore.instance
           .collection('swipes')
           .where('swiperId', isEqualTo: userRef)
           .count()
           .get();
 
-      final results = await Future.wait([
-        chatsCountFut,
-        sentMessagesFut,
-        receivedMessagesFut,
-        swipesCountFut,
-      ]);
+      // Count messages from all chats (sent and received)
+      int sentCount = 0;
+      int receivedCount = 0;
+
+      // For each chat, count messages sent and received by the user
+      for (final chatDoc in chatsSnapshot.docs) {
+        try {
+          final sentSnapshot = await chatDoc.reference
+              .collection('messages')
+              .where('senderId', isEqualTo: userRef)
+              .count()
+              .get();
+          sentCount += sentSnapshot.count ?? 0;
+
+          final receivedSnapshot = await chatDoc.reference
+              .collection('messages')
+              .where('receiverId', isEqualTo: userRef)
+              .count()
+              .get();
+          receivedCount += receivedSnapshot.count ?? 0;
+        } catch (e) {
+          debugPrint('Error counting messages in chat ${chatDoc.id}: $e');
+        }
+      }
 
       setState(() {
-        _model.chatsCount = results[0].count;
-        _model.sentMessagesCount = results[1].count;
-        _model.receivedMessagesCount = results[2].count;
-        _model.swipesCount = results[3].count;
+        _model.chatsCount = chatsCount;
+        _model.sentMessagesCount = sentCount;
+        _model.receivedMessagesCount = receivedCount;
+        _model.swipesCount = swipesSnapshot.count;
         _model.isLoading = false;
       });
     } catch (e) {
+      debugPrint('DataUsage error: $e');
       setState(() {
         _model.errorMessage = 'Failed to compute usage. Please try again.';
         _model.isLoading = false;

@@ -1,6 +1,7 @@
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/internationalization.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/services/notification_service.dart';
 import 'dart:ui';
@@ -27,6 +28,22 @@ class _AppAppearanceWidgetState extends State<AppAppearanceWidget> {
   late AppAppearanceModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  String _getCurrentLanguageName(BuildContext context) {
+    final locale = FFLocalizations.getStoredLocale();
+    final localeCode = locale?.toString() ?? 'en';
+    switch (localeCode) {
+      case 'en': return 'English (US)';
+      case 'zh': return 'Mandarin';
+      case 'es': return 'Spanish';
+      case 'hi': return 'Hindi';
+      case 'fr': return 'French';
+      case 'ar': return 'Arabic';
+      case 'ru': return 'Russian';
+      case 'ja': return 'Japanese';
+      default: return 'English (US)';
+    }
+  }
 
   @override
   void initState() {
@@ -76,7 +93,7 @@ class _AppAppearanceWidgetState extends State<AppAppearanceWidget> {
             ),
           ),
           title: Text(
-            'App Appearance',
+            FFLocalizations.of(context).getText('app_appearance'),
             style: FlutterFlowTheme.of(context).titleMedium.override(
                   fontFamily: 'Onest',
                   letterSpacing: 0.0,
@@ -172,7 +189,7 @@ class _AppAppearanceWidgetState extends State<AppAppearanceWidget> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      'Display Mode',
+                                      FFLocalizations.of(context).getText('display_mode'),
                                       style: FlutterFlowTheme.of(context)
                                           .titleMedium
                                           .override(
@@ -183,8 +200,8 @@ class _AppAppearanceWidgetState extends State<AppAppearanceWidget> {
                                     SizedBox(height: 6.0),
                                     Text(
                                       isDarkMode
-                                          ? 'Dark mode keeps things easy on the eyes.'
-                                          : 'Light mode goes all in on clarity and warmth.',
+                                          ? FFLocalizations.of(context).getText('dark_mode')
+                                          : FFLocalizations.of(context).getText('light_mode'),
                                       style: FlutterFlowTheme.of(context)
                                           .labelLarge
                                           .override(
@@ -245,7 +262,7 @@ class _AppAppearanceWidgetState extends State<AppAppearanceWidget> {
                         padding: EdgeInsetsDirectional.fromSTEB(
                             0.0, 10.0, 0.0, 10.0),
                         child: Text(
-                          'App Language',
+                          FFLocalizations.of(context).getText('app_language'),
                           style:
                               FlutterFlowTheme.of(context).labelLarge.override(
                                     fontFamily: 'Onest',
@@ -261,7 +278,7 @@ class _AppAppearanceWidgetState extends State<AppAppearanceWidget> {
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 0.0, 10.0, 12.0, 10.0),
                             child: Text(
-                              'English (US)',
+                              _getCurrentLanguageName(context),
                               style: FlutterFlowTheme.of(context)
                                   .labelLarge
                                   .override(
