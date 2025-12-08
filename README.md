@@ -135,3 +135,41 @@ firebase/
 ### PawaPay Sandbox
 - Use PawaPay sandbox credentials for testing
 - Test phone numbers are provided in PawaPay docs
+
+---
+
+## PawaPay Secret Setup (Quick Guide)
+
+The Cloud Functions are configured to use **Google Cloud Secret Manager** to securely store the PawaPay API token.
+
+### Option 1: Google Cloud Console (Easiest)
+
+1. Go to [Google Cloud Console - Secret Manager](https://console.cloud.google.com/security/secret-manager)
+2. Select your Firebase project
+3. Click **"Create Secret"**
+4. Set the name to: `PAWAPAY_API_TOKEN`
+5. Paste your PawaPay API token as the secret value
+6. Click **"Create"**
+
+Then grant access to Cloud Functions:
+1. Click on the secret `PAWAPAY_API_TOKEN`
+2. Go to **"Permissions"** tab
+3. Click **"Grant Access"**
+4. Add principal: `YOUR_PROJECT_ID@appspot.gserviceaccount.com`
+5. Select role: **"Secret Manager Secret Accessor"**
+6. Save
+
+### Option 2: Firebase Functions Config (Alternative)
+
+If Secret Manager isn't available, you can use Firebase Functions config:
+
+```bash
+firebase functions:config:set pawapay.api_token="YOUR_PAWAPAY_API_TOKEN"
+firebase deploy --only functions
+```
+
+### After Setup
+
+1. **Regenerate your PawaPay API token** from the PawaPay dashboard (if it was exposed)
+2. Deploy the Cloud Functions: `firebase deploy --only functions`
+3. Test a payment in the app

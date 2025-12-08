@@ -32,7 +32,7 @@ class PawaPayService {
   
   // Set to true to enable test mode (simulates successful payments)
   // Set to false for production with real PawaPay API
-  static const bool _testMode = true;
+  static const bool _testMode = false;
   
   /// Returns whether the service is in test mode
   static bool get isTestMode => _testMode;
