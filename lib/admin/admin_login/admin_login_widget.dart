@@ -95,17 +95,12 @@ class _AdminLoginWidgetState extends State<AdminLoginWidget> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: FlutterFlowTheme.of(context).primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Icon(
-                          Icons.admin_panel_settings_rounded,
-                          size: 40,
-                          color: FlutterFlowTheme.of(context).primary,
+                      Center(
+                        child: Image.asset(
+                          'assets/images/Vuka_Logo-Original.png',
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.contain,
                         ),
                       ),
                       const SizedBox(height: 24),

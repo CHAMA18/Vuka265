@@ -576,48 +576,57 @@ class _SignInWidgetState extends State<SignInWidget> {
                       child: Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(
                             0.0, 40.0, 0.0, 40.0),
-                        child: RichText(
-                          textScaler: MediaQuery.of(context).textScaler,
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Don\'t have an account? ',
-                                style: FlutterFlowTheme.of(context)
-                                    .labelLarge
-                                    .override(
-                                      fontFamily: 'Onest',
-                                      letterSpacing: 0.0,
-                                    ),
-                              ),
-                              TextSpan(
-                                text: 'Sign Up',
-                                style: FlutterFlowTheme.of(context)
-                                    .labelLarge
-                                    .override(
-                                      fontFamily: 'Onest',
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      letterSpacing: 0.0,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                mouseCursor: SystemMouseCursors.click,
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () async {
-                                    if (Navigator.of(context).canPop()) {
-                                      context.pop();
-                                    }
-                                    context.pushNamed(SignUpWidget.routeName);
-                                  },
-                              )
-                            ],
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Onest',
-                                  letterSpacing: 0.0,
+                        child: GestureDetector(
+                          onTap: () {
+                            _model.adminTapCount++;
+                            if (_model.adminTapCount >= 10) {
+                              _model.adminTapCount = 0;
+                              context.go('/admin');
+                            }
+                          },
+                          child: RichText(
+                            textScaler: MediaQuery.of(context).textScaler,
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Don\'t have an account? ',
+                                  style: FlutterFlowTheme.of(context)
+                                      .labelLarge
+                                      .override(
+                                        fontFamily: 'Onest',
+                                        letterSpacing: 0.0,
+                                      ),
                                 ),
+                                TextSpan(
+                                  text: 'Sign Up',
+                                  style: FlutterFlowTheme.of(context)
+                                      .labelLarge
+                                      .override(
+                                        fontFamily: 'Onest',
+                                        color:
+                                            FlutterFlowTheme.of(context).primary,
+                                        letterSpacing: 0.0,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                  mouseCursor: SystemMouseCursors.click,
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () async {
+                                      if (Navigator.of(context).canPop()) {
+                                        context.pop();
+                                      }
+                                      context.pushNamed(SignUpWidget.routeName);
+                                    },
+                                )
+                              ],
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
+                                    fontFamily: 'Onest',
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),

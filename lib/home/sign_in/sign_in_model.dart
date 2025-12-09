@@ -18,6 +18,9 @@ class SignInModel extends FlutterFlowModel<SignInWidget> {
   ///  Local state fields for this page.
 
   bool isTrue = true;
+  
+  /// Counter for secret admin access (10 taps on "Don't have an account?" text)
+  int adminTapCount = 0;
 
   ///  State fields for stateful widgets in this page.
 

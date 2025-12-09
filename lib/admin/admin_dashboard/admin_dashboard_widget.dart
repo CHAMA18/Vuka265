@@ -118,14 +118,11 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Container(
+                Image.asset(
+                  'assets/images/Vuka_Logo-Original.png',
                   width: 40,
                   height: 40,
-                  decoration: BoxDecoration(
-                    color: FlutterFlowTheme.of(context).primary,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.admin_panel_settings, color: Colors.white, size: 24),
+                  fit: BoxFit.contain,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -244,6 +241,15 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
               icon: Icon(Icons.menu, color: FlutterFlowTheme.of(context).primaryText),
               onPressed: () => scaffoldKey.currentState?.openDrawer(),
             ),
+          if (!isWideScreen) ...[
+            Image.asset(
+              'assets/images/Vuka_Logo-Original.png',
+              width: 32,
+              height: 32,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(width: 12),
+          ],
           Expanded(
             child: Text(
               _getTabTitle(),
@@ -296,156 +302,219 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Wrap(
-            spacing: 16,
-            runSpacing: 16,
-            children: [
-              _buildStatCard('Total Users', '${analytics.totalUsers}', Icons.people, FlutterFlowTheme.of(context).primary),
-              _buildStatCard('Active Today', '${analytics.activeUsersToday}', Icons.trending_up, FlutterFlowTheme.of(context).success),
-              _buildStatCard('Total Matches', '${analytics.totalMatches}', Icons.favorite, FlutterFlowTheme.of(context).secondary),
-              _buildStatCard('Messages', '${analytics.totalMessages}', Icons.message, FlutterFlowTheme.of(context).accent4),
-              _buildStatCard('New This Week', '${analytics.newUsersThisWeek}', Icons.person_add, FlutterFlowTheme.of(context).warning),
-              _buildStatCard('Premium Users', '${analytics.premiumUsers}', Icons.star, Colors.amber),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final cardWidth = constraints.maxWidth > 600 
+                  ? (constraints.maxWidth - 32) / 3 
+                  : constraints.maxWidth > 400 
+                      ? (constraints.maxWidth - 16) / 2 
+                      : constraints.maxWidth;
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  _buildStatCard('Total Users', '${analytics.totalUsers}', Icons.people, FlutterFlowTheme.of(context).primary, cardWidth - 8),
+                  _buildStatCard('Active Today', '${analytics.activeUsersToday}', Icons.trending_up, FlutterFlowTheme.of(context).success, cardWidth - 8),
+                  _buildStatCard('Total Matches', '${analytics.totalMatches}', Icons.favorite, FlutterFlowTheme.of(context).secondary, cardWidth - 8),
+                  _buildStatCard('Messages', '${analytics.totalMessages}', Icons.message, FlutterFlowTheme.of(context).accent4, cardWidth - 8),
+                  _buildStatCard('New This Week', '${analytics.newUsersThisWeek}', Icons.person_add, FlutterFlowTheme.of(context).warning, cardWidth - 8),
+                  _buildStatCard('Premium Users', '${analytics.premiumUsers}', Icons.star, Colors.amber, cardWidth - 8),
+                ],
+              );
+            },
           ),
-          const SizedBox(height: 24),
-          Text(
-            'Most Active Users',
-            style: FlutterFlowTheme.of(context).titleMedium.override(
-              fontFamily: 'Onest',
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0,
+          const SizedBox(height: 20),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 700;
+              return isWide 
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: _buildActiveUsersCard(analytics)),
+                        const SizedBox(width: 16),
+                        Expanded(child: _buildPageViewsCard(analytics)),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        _buildActiveUsersCard(analytics),
+                        const SizedBox(height: 16),
+                        _buildPageViewsCard(analytics),
+                      ],
+                    );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActiveUsersCard(AdminAnalytics analytics) {
+    return Container(
+      decoration: BoxDecoration(
+        color: FlutterFlowTheme.of(context).secondaryBackground,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Icon(Icons.people_alt_rounded, color: FlutterFlowTheme.of(context).primary, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Most Active Users',
+                  style: FlutterFlowTheme.of(context).titleSmall.override(
+                    fontFamily: 'Onest',
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: FlutterFlowTheme.of(context).secondaryBackground,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: analytics.mostActiveUsers.isEmpty
-                ? Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Center(
-                      child: Text(
-                        'No active users data yet',
-                        style: FlutterFlowTheme.of(context).bodyMedium.override(
-                          fontFamily: 'Onest',
-                          color: FlutterFlowTheme.of(context).secondaryText,
-                          letterSpacing: 0,
-                        ),
+          Divider(height: 1, color: FlutterFlowTheme.of(context).alternate),
+          analytics.mostActiveUsers.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Center(
+                    child: Text(
+                      'No active users data yet',
+                      style: FlutterFlowTheme.of(context).bodyMedium.override(
+                        fontFamily: 'Onest',
+                        color: FlutterFlowTheme.of(context).secondaryText,
+                        letterSpacing: 0,
                       ),
                     ),
-                  )
-                : ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: analytics.mostActiveUsers.length.clamp(0, 5),
-                    separatorBuilder: (_, __) => Divider(
-                      height: 1,
-                      color: FlutterFlowTheme.of(context).alternate,
-                    ),
-                    itemBuilder: (context, index) {
-                      final user = analytics.mostActiveUsers[index];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: user.photoUrl.isNotEmpty
-                              ? NetworkImage(user.photoUrl)
-                              : null,
-                          backgroundColor: FlutterFlowTheme.of(context).primary.withValues(alpha: 0.2),
-                          child: user.photoUrl.isEmpty
-                              ? Icon(Icons.person, color: FlutterFlowTheme.of(context).primary)
-                              : null,
-                        ),
-                        title: Text(
-                          user.displayName,
-                          style: FlutterFlowTheme.of(context).bodyMedium.override(
-                            fontFamily: 'Onest',
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0,
-                          ),
-                        ),
-                        subtitle: Text(
-                          user.email,
-                          style: FlutterFlowTheme.of(context).bodySmall.override(
-                            fontFamily: 'Onest',
-                            color: FlutterFlowTheme.of(context).secondaryText,
-                            letterSpacing: 0,
-                          ),
-                        ),
-                        trailing: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: FlutterFlowTheme.of(context).primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '${user.messageCount} msgs',
-                            style: FlutterFlowTheme.of(context).bodySmall.override(
-                              fontFamily: 'Onest',
-                              color: FlutterFlowTheme.of(context).primary,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
                   ),
+                )
+              : ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: analytics.mostActiveUsers.length.clamp(0, 5),
+                  separatorBuilder: (_, __) => Divider(
+                    height: 1,
+                    color: FlutterFlowTheme.of(context).alternate,
+                  ),
+                  itemBuilder: (context, index) {
+                    final user = analytics.mostActiveUsers[index];
+                    return ListTile(
+                      dense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      leading: CircleAvatar(
+                        radius: 18,
+                        backgroundImage: user.photoUrl.isNotEmpty ? NetworkImage(user.photoUrl) : null,
+                        backgroundColor: FlutterFlowTheme.of(context).primary.withValues(alpha: 0.2),
+                        child: user.photoUrl.isEmpty ? Icon(Icons.person, color: FlutterFlowTheme.of(context).primary, size: 18) : null,
+                      ),
+                      title: Text(
+                        user.displayName,
+                        style: FlutterFlowTheme.of(context).bodyMedium.override(fontFamily: 'Onest', fontWeight: FontWeight.w500, letterSpacing: 0),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(
+                        user.email,
+                        style: FlutterFlowTheme.of(context).bodySmall.override(fontFamily: 'Onest', color: FlutterFlowTheme.of(context).secondaryText, letterSpacing: 0, fontSize: 11),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context).primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '${user.messageCount}',
+                          style: FlutterFlowTheme.of(context).bodySmall.override(fontFamily: 'Onest', color: FlutterFlowTheme.of(context).primary, fontWeight: FontWeight.w600, letterSpacing: 0),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPageViewsCard(AdminAnalytics analytics) {
+    return Container(
+      decoration: BoxDecoration(
+        color: FlutterFlowTheme.of(context).secondaryBackground,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-          const SizedBox(height: 24),
-          Text(
-            'Page Views',
-            style: FlutterFlowTheme.of(context).titleMedium.override(
-              fontFamily: 'Onest',
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: FlutterFlowTheme.of(context).secondaryBackground,
-              borderRadius: BorderRadius.circular(12),
+            child: Row(
+              children: [
+                Icon(Icons.bar_chart_rounded, color: FlutterFlowTheme.of(context).primary, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Page Views',
+                  style: FlutterFlowTheme.of(context).titleSmall.override(
+                    fontFamily: 'Onest',
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ],
             ),
+          ),
+          Divider(height: 1, color: FlutterFlowTheme.of(context).alternate),
+          Padding(
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: analytics.pageViews.entries.map((entry) {
-                final maxViews = analytics.pageViews.values.reduce((a, b) => a > b ? a : b);
-                final percentage = entry.value / maxViews;
+                final maxViews = analytics.pageViews.values.isEmpty ? 1 : analytics.pageViews.values.reduce((a, b) => a > b ? a : b);
+                final percentage = maxViews > 0 ? entry.value / maxViews : 0.0;
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            entry.key,
-                            style: FlutterFlowTheme.of(context).bodyMedium.override(
-                              fontFamily: 'Onest',
-                              letterSpacing: 0,
+                          Expanded(
+                            child: Text(
+                              entry.key,
+                              style: FlutterFlowTheme.of(context).bodySmall.override(fontFamily: 'Onest', letterSpacing: 0),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           Text(
                             '${entry.value}',
-                            style: FlutterFlowTheme.of(context).bodyMedium.override(
-                              fontFamily: 'Onest',
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0,
-                            ),
+                            style: FlutterFlowTheme.of(context).bodySmall.override(fontFamily: 'Onest', fontWeight: FontWeight.w600, letterSpacing: 0),
                           ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(3),
                         child: LinearProgressIndicator(
                           value: percentage,
                           backgroundColor: FlutterFlowTheme.of(context).alternate,
                           color: FlutterFlowTheme.of(context).primary,
-                          minHeight: 6,
+                          minHeight: 5,
                         ),
                       ),
                     ],
@@ -459,42 +528,56 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(String title, String value, IconData icon, Color color, double width) {
     return Container(
-      width: 160,
-      padding: const EdgeInsets.all(16),
+      width: width,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: FlutterFlowTheme.of(context).secondaryBackground,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: FlutterFlowTheme.of(context).headlineSmall.override(
-              fontFamily: 'Onest',
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: FlutterFlowTheme.of(context).bodySmall.override(
-              fontFamily: 'Onest',
-              color: FlutterFlowTheme.of(context).secondaryText,
-              letterSpacing: 0,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: FlutterFlowTheme.of(context).titleLarge.override(
+                    fontFamily: 'Onest',
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  title,
+                  style: FlutterFlowTheme.of(context).bodySmall.override(
+                    fontFamily: 'Onest',
+                    color: FlutterFlowTheme.of(context).secondaryText,
+                    letterSpacing: 0,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         ],
@@ -507,70 +590,105 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(
+          child: Column(
             children: [
-              Expanded(
-                child: TextField(
-                  controller: _model.searchController,
-                  focusNode: _model.searchFocusNode,
-                  decoration: InputDecoration(
-                    hintText: 'Search users by name or email...',
-                    hintStyle: FlutterFlowTheme.of(context).bodyMedium.override(
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _model.searchController,
+                      focusNode: _model.searchFocusNode,
+                      decoration: InputDecoration(
+                        hintText: 'Search users by name or email...',
+                        hintStyle: FlutterFlowTheme.of(context).bodyMedium.override(
+                          fontFamily: 'Onest',
+                          color: FlutterFlowTheme.of(context).secondaryText,
+                          letterSpacing: 0,
+                        ),
+                        prefixIcon: Icon(Icons.search, color: FlutterFlowTheme.of(context).secondaryText),
+                        filled: true,
+                        fillColor: FlutterFlowTheme.of(context).secondaryBackground,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      style: FlutterFlowTheme.of(context).bodyMedium.override(
+                        fontFamily: 'Onest',
+                        letterSpacing: 0,
+                      ),
+                      onSubmitted: (value) async {
+                        if (value.isNotEmpty) {
+                          setState(() => _model.isLoading = true);
+                          final results = await AdminService.searchUsers(value);
+                          setState(() {
+                            _model.users = results;
+                            _model.isLoading = false;
+                          });
+                        } else {
+                          _loadData();
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  FFButtonWidget(
+                    onPressed: () async {
+                      final query = _model.searchController?.text ?? '';
+                      if (query.isNotEmpty) {
+                        setState(() => _model.isLoading = true);
+                        final results = await AdminService.searchUsers(query);
+                        setState(() {
+                          _model.users = results;
+                          _model.isLoading = false;
+                        });
+                      }
+                    },
+                    text: 'Search',
+                    options: FFButtonOptions(
+                      height: 48,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      color: FlutterFlowTheme.of(context).primary,
+                      textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
+                        fontFamily: 'Onest',
+                        color: Colors.white,
+                        letterSpacing: 0,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      elevation: 0,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${_model.users.length} users',
+                    style: FlutterFlowTheme.of(context).bodySmall.override(
                       fontFamily: 'Onest',
                       color: FlutterFlowTheme.of(context).secondaryText,
                       letterSpacing: 0,
                     ),
-                    prefixIcon: Icon(Icons.search, color: FlutterFlowTheme.of(context).secondaryText),
-                    filled: true,
-                    fillColor: FlutterFlowTheme.of(context).secondaryBackground,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+                  ),
+                  TextButton.icon(
+                    onPressed: () {
+                      _model.searchController?.clear();
+                      _loadData();
+                    },
+                    icon: Icon(Icons.refresh, size: 16, color: FlutterFlowTheme.of(context).primary),
+                    label: Text(
+                      'Show All',
+                      style: FlutterFlowTheme.of(context).bodySmall.override(
+                        fontFamily: 'Onest',
+                        color: FlutterFlowTheme.of(context).primary,
+                        letterSpacing: 0,
+                      ),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
-                  style: FlutterFlowTheme.of(context).bodyMedium.override(
-                    fontFamily: 'Onest',
-                    letterSpacing: 0,
-                  ),
-                  onSubmitted: (value) async {
-                    if (value.isNotEmpty) {
-                      setState(() => _model.isLoading = true);
-                      final results = await AdminService.searchUsers(value);
-                      setState(() {
-                        _model.users = results;
-                        _model.isLoading = false;
-                      });
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(width: 8),
-              FFButtonWidget(
-                onPressed: () async {
-                  final query = _model.searchController?.text ?? '';
-                  if (query.isNotEmpty) {
-                    setState(() => _model.isLoading = true);
-                    final results = await AdminService.searchUsers(query);
-                    setState(() {
-                      _model.users = results;
-                      _model.isLoading = false;
-                    });
-                  }
-                },
-                text: 'Search',
-                options: FFButtonOptions(
-                  height: 48,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  color: FlutterFlowTheme.of(context).primary,
-                  textStyle: FlutterFlowTheme.of(context).bodyMedium.override(
-                    fontFamily: 'Onest',
-                    color: Colors.white,
-                    letterSpacing: 0,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  elevation: 0,
-                ),
+                ],
               ),
             ],
           ),
@@ -593,6 +711,28 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
                           fontFamily: 'Onest',
                           color: FlutterFlowTheme.of(context).secondaryText,
                           letterSpacing: 0,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Users will appear here once they register',
+                        style: FlutterFlowTheme.of(context).bodySmall.override(
+                          fontFamily: 'Onest',
+                          color: FlutterFlowTheme.of(context).secondaryText,
+                          letterSpacing: 0,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton.icon(
+                        onPressed: _loadData,
+                        icon: Icon(Icons.refresh, color: FlutterFlowTheme.of(context).primary),
+                        label: Text(
+                          'Refresh',
+                          style: FlutterFlowTheme.of(context).bodyMedium.override(
+                            fontFamily: 'Onest',
+                            color: FlutterFlowTheme.of(context).primary,
+                            letterSpacing: 0,
+                          ),
                         ),
                       ),
                     ],
@@ -767,34 +907,47 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
               letterSpacing: 0,
             ),
           ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 16,
-            runSpacing: 16,
-            children: [
-              _buildMetricCard('Average Matches/User', 
-                analytics.totalUsers > 0 
-                  ? (analytics.totalMatches / analytics.totalUsers).toStringAsFixed(1) 
-                  : '0',
-                Icons.favorite_border,
-              ),
-              _buildMetricCard('Average Messages/User', 
-                analytics.totalUsers > 0 
-                  ? (analytics.totalMessages / analytics.totalUsers).toStringAsFixed(1) 
-                  : '0',
-                Icons.chat_bubble_outline,
-              ),
-              _buildMetricCard('Premium Conversion', 
-                analytics.totalUsers > 0 
-                  ? '${((analytics.premiumUsers / analytics.totalUsers) * 100).toStringAsFixed(1)}%' 
-                  : '0%',
-                Icons.trending_up,
-              ),
-              _buildMetricCard('Total Revenue', 
-                '\$${analytics.totalRevenue.toStringAsFixed(2)}',
-                Icons.attach_money,
-              ),
-            ],
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final cardWidth = constraints.maxWidth > 600 
+                  ? (constraints.maxWidth - 24) / 4 
+                  : constraints.maxWidth > 400 
+                      ? (constraints.maxWidth - 12) / 2 
+                      : constraints.maxWidth;
+              return Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  _buildMetricCard('Avg Matches/User', 
+                    analytics.totalUsers > 0 
+                      ? (analytics.totalMatches / analytics.totalUsers).toStringAsFixed(1) 
+                      : '0',
+                    Icons.favorite_border,
+                    cardWidth - 6,
+                  ),
+                  _buildMetricCard('Avg Messages/User', 
+                    analytics.totalUsers > 0 
+                      ? (analytics.totalMessages / analytics.totalUsers).toStringAsFixed(1) 
+                      : '0',
+                    Icons.chat_bubble_outline,
+                    cardWidth - 6,
+                  ),
+                  _buildMetricCard('Premium Rate', 
+                    analytics.totalUsers > 0 
+                      ? '${((analytics.premiumUsers / analytics.totalUsers) * 100).toStringAsFixed(1)}%' 
+                      : '0%',
+                    Icons.trending_up,
+                    cardWidth - 6,
+                  ),
+                  _buildMetricCard('Total Revenue', 
+                    '\$${analytics.totalRevenue.toStringAsFixed(2)}',
+                    Icons.attach_money,
+                    cardWidth - 6,
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 24),
           Text(
@@ -870,33 +1023,40 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
     );
   }
 
-  Widget _buildMetricCard(String title, String value, IconData icon) {
+  Widget _buildMetricCard(String title, String value, IconData icon, double width) {
     return Container(
-      width: 200,
-      padding: const EdgeInsets.all(16),
+      width: width,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: FlutterFlowTheme.of(context).secondaryBackground,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
               color: FlutterFlowTheme.of(context).primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: FlutterFlowTheme.of(context).primary, size: 20),
+            child: Icon(icon, color: FlutterFlowTheme.of(context).primary, size: 18),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   value,
-                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                  style: FlutterFlowTheme.of(context).titleSmall.override(
                     fontFamily: 'Onest',
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0,
@@ -908,6 +1068,7 @@ class _AdminDashboardWidgetState extends State<AdminDashboardWidget> {
                   style: FlutterFlowTheme.of(context).bodySmall.override(
                     fontFamily: 'Onest',
                     color: FlutterFlowTheme.of(context).secondaryText,
+                    fontSize: 11,
                     letterSpacing: 0,
                   ),
                   overflow: TextOverflow.ellipsis,
