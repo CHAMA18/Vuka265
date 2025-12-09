@@ -4,6 +4,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/internationalization.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/settings/logout_notify/logout_notify_widget.dart';
+import '../delete_account/delete_account_widget.dart';
 import 'dart:ui';
 import '/actions/actions.dart' as action_blocks;
 import '/index.dart';
@@ -126,12 +127,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                'https://firebasestorage.googleapis.com/v0/b/datinger-e2bc1.appspot.com/o/star%20(1).png?alt=media&token=802476cc-0718-4b8d-841d-0f614f257284',
-                                fit: BoxFit.cover,
-                              ),
+                            Icon(
+                              Icons.star_rounded,
+                              color: FlutterFlowTheme.of(context).info,
+                              size: 50.0,
                             ),
                             Expanded(
                               child: Padding(
@@ -692,6 +691,82 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                   ),
                                 ),
                               ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    InkWell(
+                      splashColor: Colors.transparent,
+                      focusColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onTap: () async {
+                        await showModalBottomSheet(
+                          isScrollControlled: true,
+                          backgroundColor:
+                              FlutterFlowTheme.of(context).transparent,
+                          barrierColor: FlutterFlowTheme.of(context).accent3,
+                          context: context,
+                          builder: (context) {
+                            return GestureDetector(
+                              onTap: () {
+                                FocusScope.of(context).unfocus();
+                                FocusManager.instance.primaryFocus?.unfocus();
+                              },
+                              child: Padding(
+                                padding: MediaQuery.viewInsetsOf(context),
+                                child: DeleteAccountWidget(),
+                              ),
+                            );
+                          },
+                        ).then((value) => safeSetState(() {}));
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(
+                                15.0, 12.0, 0.0, 12.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      1.0, 0.0, 0.0, 0.0),
+                                  child: Icon(
+                                    Icons.delete_outline,
+                                    color: FlutterFlowTheme.of(context).error,
+                                    size: 22.0,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      12.0, 0.0, 0.0, 0.0),
+                                  child: Text(
+                                    'Delete Account',
+                                    style: FlutterFlowTheme.of(context)
+                                        .labelLarge
+                                        .override(
+                                          fontFamily: 'Onest',
+                                          color: FlutterFlowTheme.of(context)
+                                              .error,
+                                          letterSpacing: 0.0,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(
+                                0.0, 12.0, 12.0, 12.0),
+                            child: Icon(
+                              FFIcons.kchevronRight,
+                              color: FlutterFlowTheme.of(context).error,
+                              size: 20.0,
                             ),
                           ),
                         ],

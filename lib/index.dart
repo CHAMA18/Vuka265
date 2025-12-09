@@ -67,3 +67,7 @@ export '/register/forgotpassword/forgotpassword_widget.dart'
     show ForgotpasswordWidget;
 export '/settings/device_management/device_management_widget.dart'
     show DeviceManagementWidget;
+
+// Admin pages
+export '/admin/admin_login/admin_login_widget.dart' show AdminLoginWidget;
+export '/admin/admin_dashboard/admin_dashboard_widget.dart' show AdminDashboardWidget;

@@ -69,13 +69,13 @@ class _HomeWidgetState extends State<HomeWidget> {
             ),
       );
       
-      // Get recently skipped users (within last 48 hours)
-      final DateTime fortyEightHoursAgo = DateTime.now().subtract(Duration(hours: 48));
+      // Get recently skipped users (within last 24 hours / 1 day)
+      final DateTime oneDayAgo = DateTime.now().subtract(Duration(hours: 24));
       final recentSkips = await querySwipesRecordOnce(
         queryBuilder: (swipesRecord) => swipesRecord
             .where('swiperId', isEqualTo: currentUserReference)
             .where('type', isEqualTo: false)
-            .where('timestamp', isGreaterThanOrEqualTo: fortyEightHoursAgo),
+            .where('timestamp', isGreaterThanOrEqualTo: oneDayAgo),
       );
       final skippedUserRefs = recentSkips.map((e) => e.targetuserid).whereType<DocumentReference>().toList();
       
@@ -96,7 +96,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                       .toList()),
         );
         // Apply compatibility-based sorting to filtered results
-        // Filter out recently skipped users (within 48 hours)
+        // Filter out recently skipped users (within 24 hours / 1 day)
         List<UsersRecord> sortedFilteredUsers = _model.filteredUsers!
             .where((user) => !skippedUserRefs.contains(user.reference))
             .toList();
@@ -182,7 +182,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         );
         
         // Sort users by compatibility and distance for better matching
-        // Filter out recently skipped users (within 48 hours)
+        // Filter out recently skipped users (within 24 hours / 1 day)
         List<UsersRecord> sortedUsers = _model.defaultUsers!
             .where((user) => !skippedUserRefs.contains(user.reference))
             .toList();
@@ -524,7 +524,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                 ),
                               });
                               
-                              // Create skip record with 48-hour timestamp
+                              // Create skip record with 24-hour timestamp
                               await SwipesRecord.collection.add(createSwipesRecordData(
                                 type: false,
                                 timestamp: getCurrentTimestamp,
@@ -853,13 +853,13 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                         _model.isReloading = true;
                                                         safeSetState(() {});
                                                         
-                                                        // Get recently skipped users (within last 48 hours)
-                                                        final DateTime fortyEightHoursAgo = DateTime.now().subtract(Duration(hours: 48));
+                                                        // Get recently skipped users (within last 24 hours / 1 day)
+                                                        final DateTime oneDayAgo = DateTime.now().subtract(Duration(hours: 24));
                                                         final recentSkips = await querySwipesRecordOnce(
                                                           queryBuilder: (swipesRecord) => swipesRecord
                                                               .where('swiperId', isEqualTo: currentUserReference)
                                                               .where('type', isEqualTo: false)
-                                                              .where('timestamp', isGreaterThanOrEqualTo: fortyEightHoursAgo),
+                                                              .where('timestamp', isGreaterThanOrEqualTo: oneDayAgo),
                                                         );
                                                         final skippedUserRefs = recentSkips.map((e) => e.targetuserid).whereType<DocumentReference>().toList();
                                                         
@@ -878,7 +878,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                         .map((e) => e.id)
                                                                         .toList()),
                                                           );
-                                                          // Filter out recently skipped users (within 48 hours)
+                                                          // Filter out recently skipped users (within 24 hours / 1 day)
                                                           List<UsersRecord> sortedFilteredUsers = _model.filteredUsers!
                                                               .where((user) => !skippedUserRefs.contains(user.reference))
                                                               .toList();
@@ -938,7 +938,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                                     .toList()),
                                                             limit: 20,
                                                           );
-                                                          // Filter out recently skipped users (within 48 hours)
+                                                          // Filter out recently skipped users (within 24 hours / 1 day)
                                                           List<UsersRecord> sortedUsers = _model.defaultUsers!
                                                               .where((user) => !skippedUserRefs.contains(user.reference))
                                                               .toList();
@@ -1055,7 +1055,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                         if (_model.currentCardIndex < _model.users.length) {
                                                           final stackUsersItem = _model.users[_model.currentCardIndex];
                                                           
-                                                          // Create skip record with 48-hour timestamp
+                                                          // Create skip record with 24-hour timestamp
                                                           await SwipesRecord.collection.add(createSwipesRecordData(
                                                             type: false,
                                                             timestamp: getCurrentTimestamp,

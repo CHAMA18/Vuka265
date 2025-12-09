@@ -366,6 +366,16 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: ForgotpasswordWidget.routeName,
           path: ForgotpasswordWidget.routePath,
           builder: (context, params) => ForgotpasswordWidget(),
+        ),
+        FFRoute(
+          name: AdminLoginWidget.routeName,
+          path: AdminLoginWidget.routePath,
+          builder: (context, params) => AdminLoginWidget(),
+        ),
+        FFRoute(
+          name: AdminDashboardWidget.routeName,
+          path: AdminDashboardWidget.routePath,
+          builder: (context, params) => AdminDashboardWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
@@ -551,7 +561,9 @@ class FFRoute {
                   builder: (context, _) => builder(context, ffParams),
                 )
               : builder(context, ffParams);
-          final child = appStateNotifier.loading
+          // Skip splash screen for admin routes
+          final isAdminRoute = state.uri.path.startsWith('/admin');
+          final child = appStateNotifier.loading && !isAdminRoute
               ? Container(
                   color: Colors.transparent,
                   child: Image.asset(
