@@ -32,6 +32,13 @@ class _AdminLoginWidgetState extends State<AdminLoginWidget> {
 
     _model.passwordTextController ??= TextEditingController();
     _model.passwordFocusNode ??= FocusNode();
+
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    await _model.loadSavedCredentials();
+    if (mounted) setState(() {});
   }
 
   @override
@@ -65,6 +72,7 @@ class _AdminLoginWidgetState extends State<AdminLoginWidget> {
     debugPrint('Admin credentials valid: $isValid');
 
     if (isValid) {
+      await _model.saveCredentials(email, password);
       debugPrint('Navigating to AdminDashboard');
       if (mounted) {
         context.go('/admin-dashboard');
@@ -246,7 +254,40 @@ class _AdminLoginWidgetState extends State<AdminLoginWidget> {
                         ),
                         onFieldSubmitted: (_) => _handleLogin(),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: Checkbox(
+                              value: _model.rememberMe,
+                              onChanged: (value) => setState(() {
+                                _model.rememberMe = value ?? false;
+                              }),
+                              activeColor: FlutterFlowTheme.of(context).primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => setState(() {
+                              _model.rememberMe = !_model.rememberMe;
+                            }),
+                            child: Text(
+                              'Remember Me',
+                              style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                fontFamily: 'Onest',
+                                color: FlutterFlowTheme.of(context).secondaryText,
+                                letterSpacing: 0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
                       FFButtonWidget(
                         onPressed: _model.isLoading ? null : _handleLogin,
                         text: _model.isLoading ? 'Signing in...' : 'Sign In',
