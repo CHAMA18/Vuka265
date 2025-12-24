@@ -188,43 +188,59 @@ class _PawaPayPaymentDialogWidgetState extends State<PawaPayPaymentDialogWidget>
     while (attempts < maxAttempts && mounted) {
       await Future.delayed(const Duration(seconds: 3));
 
-      final status = await PawaPayService.checkDepositStatus(depositId);
+      final statusResult = await PawaPayService.checkDepositStatus(depositId);
 
       if (!mounted) return;
 
-      if (status['success'] == true) {
-        final paymentStatus = status['status'];
+      if (statusResult['success'] != true) {
+        setState(() {
+          _model.isProcessing = false;
+          _model.paymentStatus = null;
+        });
 
-        if (paymentStatus == 'COMPLETED' || paymentStatus == 'ACCEPTED') {
-          setState(() {
-            _model.isProcessing = false;
-            _model.paymentStatus = 'Payment successful!';
-          });
+        final errorMessage =
+            statusResult['error'] ?? 'Unable to verify payment status. Please try again.';
 
-          // Update user subscription in Firestore (especially for test mode)
-          await _updateUserSubscription();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
 
-          await Future.delayed(const Duration(seconds: 1));
+      final paymentStatus = statusResult['status'];
+
+      if (paymentStatus == 'COMPLETED' || paymentStatus == 'ACCEPTED') {
+        setState(() {
+          _model.isProcessing = false;
+          _model.paymentStatus = 'Payment successful!';
+        });
+
+        // Update user subscription in Firestore (especially for test mode)
+        await _updateUserSubscription();
+
+        await Future.delayed(const Duration(seconds: 1));
           
-          if (mounted) {
-            widget.onPaymentSuccess();
-            Navigator.of(context).pop();
-          }
-          return;
-        } else if (paymentStatus == 'FAILED' || paymentStatus == 'REJECTED') {
-          setState(() {
-            _model.isProcessing = false;
-            _model.paymentStatus = null;
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Payment was declined. Please try again.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
+        if (mounted) {
+          widget.onPaymentSuccess();
+          Navigator.of(context).pop();
         }
+        return;
+      } else if (paymentStatus == 'FAILED' || paymentStatus == 'REJECTED') {
+        setState(() {
+          _model.isProcessing = false;
+          _model.paymentStatus = null;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Payment was declined. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
       }
 
       attempts++;

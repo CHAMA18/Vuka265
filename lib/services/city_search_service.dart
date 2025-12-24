@@ -188,7 +188,7 @@ class CitySearchService {
           final country = address['country'] as String?;
           final name = (m['name'] as String?) ?? city ?? '';
           final parts = [name, if (state != null && state.isNotEmpty) state, if (country != null && country.isNotEmpty) country];
-          final label = parts.where((p) => p != null && (p as String).isNotEmpty).join(', ');
+          final label = parts.where((p) => (p).isNotEmpty).join(', ');
           final lat = double.tryParse(m['lat']?.toString() ?? '') ?? 0.0;
           final lon = double.tryParse(m['lon']?.toString() ?? '') ?? 0.0;
 

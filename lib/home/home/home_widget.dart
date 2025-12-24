@@ -160,7 +160,7 @@ class _HomeWidgetState extends State<HomeWidget> {
           SnackBar(
             content: Text(
               'showing ${valueOrDefault<String>(
-                _model.filteredUsers?.length?.toString(),
+                _model.filteredUsers?.length.toString(),
                 '0',
               )} filtered results sorted by compatibility',
               style: TextStyle(
